@@ -1,10 +1,10 @@
 cask "geared-term" do
-  version "0.1.1-beta.24"
-  # The nightly release replaces this artifact in place, so the release pipeline bumps the checksum
-  # together with the version.
-  sha256 "795c7352bfa2d4bb3bffce2debd47a01611c66c2e9b214565438dbad3c1d4e2b"
+  version "0.1.1-beta.25"
+  # Rendered by the geared-term nightly workflow; the URL pins the immutable versioned DMG so the
+  # checksum cannot drift while the rolling release is replaced.
+  sha256 "cb188d980ac2fddd0f36f543e9717371a222004f347c13d189e040ccf9c8d97e"
 
-  url "https://github.com/lihaozhe013/geared-term/releases/download/nightly/geared-term-macos-arm64.dmg"
+  url "https://github.com/lihaozhe013/geared-term/releases/download/nightly/geared-term-mac-arm64-#{version}.dmg"
   name "Geared Term"
   desc "Secure terminal workspace with local PTY, SSH, SFTP, and an AI assistant"
   homepage "https://github.com/lihaozhe013/geared-term"
