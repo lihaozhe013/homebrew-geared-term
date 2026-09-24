@@ -55,6 +55,12 @@ jobs:
             --sha256 "${checksum}" \
             --out Casks/geared-term.rb
 
+          # A renderer that silently writes nothing would look like "already up to date" below.
+          if ! grep -q "^  version \"${version}\"$" Casks/geared-term.rb; then
+            echo "::error::The rendered cask does not pin version ${version}."
+            exit 1
+          fi
+
       - name: Push when the cask changed
         shell: bash
         run: |
