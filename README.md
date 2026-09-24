@@ -3,9 +3,14 @@
 Self-hosted Homebrew tap for [Geared Term](https://github.com/lihaozhe013/geared-term) nightly
 builds.
 
-`Casks/geared-term.rb` is generated and pushed by the Geared Term nightly pipeline
-(`apps/desktop/scripts/render-homebrew-cask.mjs` in the application repository). Change the
-generator rather than the cask, or the next nightly run will overwrite the edit.
+`Casks/geared-term.rb` is generated, never edited by hand: change
+`apps/desktop/scripts/render-homebrew-cask.mjs` in the application repository instead, or the next
+sync overwrites the edit. Two paths keep the cask current:
+
+- the Geared Term nightly release job pushes it immediately after publishing, when the
+  `TAP_PUSH_TOKEN` secret is configured in the application repository;
+- `.github/workflows/sync-cask.yml` in this repository re-renders it hourly from the nightly
+  checksum manifest with its own `GITHUB_TOKEN`, so no cross-repository secret is needed.
 
 ## Install
 
@@ -29,8 +34,9 @@ brew outdated --cask geared-term
 brew upgrade --cask geared-term
 ```
 
-The cask pins an explicit nightly version such as `0.1.1-beta.23`, so `brew outdated` reports a new
-build as soon as the pipeline bumps this tap.
+The cask pins an explicit nightly version such as `0.1.1-beta.25` and downloads the immutable
+`geared-term-mac-arm64-<version>.dmg` asset, so the checksum cannot drift while the rolling nightly
+release is replaced. `brew outdated` reports a new build as soon as either sync path bumps this tap.
 
 ## Uninstall
 
