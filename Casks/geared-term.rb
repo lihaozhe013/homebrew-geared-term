@@ -1,8 +1,8 @@
 cask "geared-term" do
-  version "0.1.1-beta.23"
+  version "0.1.1-beta.24"
   # The nightly release replaces this artifact in place, so the release pipeline bumps the checksum
   # together with the version.
-  sha256 "28c29e6bf342e11e2e27f72eec9330aa829f3cdf14ebb1471189484b66065410"
+  sha256 "795c7352bfa2d4bb3bffce2debd47a01611c66c2e9b214565438dbad3c1d4e2b"
 
   url "https://github.com/lihaozhe013/geared-term/releases/download/nightly/geared-term-macos-arm64.dmg"
   name "Geared Term"
