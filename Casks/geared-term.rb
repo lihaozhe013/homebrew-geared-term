@@ -1,8 +1,8 @@
 cask "geared-term" do
-  version "0.1.1-beta.33"
+  version "0.1.1-beta.36"
   # Rendered by the geared-term nightly workflow; the URL pins the immutable versioned DMG so the
   # checksum cannot drift while the rolling release is replaced.
-  sha256 "c31826503be73c3b780c7d00273b6c7ec96a4d4e62b1fb90cb42ab380cd6ae56"
+  sha256 "19ce94d8139a9fd3192c7d34de242c72b4e129eebd99c5be91cb2bc153236ac2"
 
   url "https://github.com/lihaozhe013/geared-term/releases/download/nightly/geared-term-mac-arm64-#{version}.dmg"
   name "Geared Term"
