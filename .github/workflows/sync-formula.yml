@@ -39,7 +39,7 @@ jobs:
           set -euo pipefail
 
           sums="$(curl -fsSL https://github.com/lihaozhe013/geared-term/releases/download/nightly/SHA256SUMS.txt)"
-          mapfile -t matches < <(awk '$2 ~ /^geared-term-macos-arm64-[0-9]+\\.[0-9]+\\.[0-9]+(-beta\\.[0-9]+)?\\.tar\\.gz$/ { print $0 }' <<<"${sums}")
+          mapfile -t matches < <(awk '$2 ~ /^geared-term-macos-arm64-[0-9]+\.[0-9]+\.[0-9]+(-beta\.[0-9]+)?\.tar\.gz$/ { print $0 }' <<<"${sums}")
           if (( ${#matches[@]} != 1 )); then
             echo "::notice::The nightly release does not yet contain one versioned macOS command-line archive; leaving the previous tap entry in place."
             exit 0
@@ -51,9 +51,9 @@ jobs:
           version="${version%.tar.gz}"
 
           mkdir -p Formula
-          node app/apps/desktop/scripts/render-homebrew-formula.mjs \\
-            --version "${version}" \\
-            --sha256 "${checksum}" \\
+          node app/apps/desktop/scripts/render-homebrew-formula.mjs \
+            --version "${version}" \
+            --sha256 "${checksum}" \
             --out Formula/geared-term.rb
           rm -f Casks/geared-term.rb
           rmdir Casks 2>/dev/null || true
@@ -70,13 +70,13 @@ jobs:
 
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add -A Formula/geared-term.rb Casks
+          git add -A
           if git diff --cached --quiet; then
             echo 'The formula already points at the current nightly.'
             exit 0
           fi
 
-          version="$(grep -m1 -oE '[0-9]+\\.[0-9]+\\.[0-9]+(-beta\\.[0-9]+)?' Formula/geared-term.rb)"
+          version="$(grep -m1 -oE '[0-9]+\.[0-9]+\.[0-9]+(-beta\.[0-9]+)?' Formula/geared-term.rb)"
           git commit -m "chore(formula): publish geared-term ${version}"
           git pull --rebase origin main
           git push origin HEAD:main
