@@ -3,51 +3,38 @@
 Self-hosted Homebrew tap for [Geared Term](https://github.com/lihaozhe013/geared-term) nightly
 builds.
 
-`Casks/geared-term.rb` is generated, never edited by hand: change
-`apps/desktop/scripts/render-homebrew-cask.mjs` in the application repository instead, or the next
-sync overwrites the edit. Two paths keep the cask current:
-
-- the Geared Term nightly release job pushes it immediately after publishing, when the
-  `TAP_PUSH_TOKEN` secret is configured in the application repository;
-- `.github/workflows/sync-cask.yml` in this repository re-renders it hourly from the nightly
-  checksum manifest with its own `GITHUB_TOKEN`, so no cross-repository secret is needed.
+The Homebrew formula is generated from the versioned macOS arm64 command-line archive and its
+SHA-256 checksum. The Geared Term nightly release job updates it after publishing. This tap also
+checks the nightly checksum manifest hourly so a missing cross-repository push is recovered
+automatically.
 
 ## Install
 
 ```sh
-brew install --cask lihaozhe013/geared-term/geared-term
+brew install --formula lihaozhe013/geared-term/geared-term
+geared-term
 ```
 
-Homebrew 6 and newer only load non-official taps that you explicitly trust, and the fully qualified
-name above trusts just this cask. To use the short name afterwards:
-
-```sh
-brew tap lihaozhe013/geared-term
-brew trust --cask lihaozhe013/geared-term/geared-term
-```
+Geared Term starts from a trusted terminal and returns to the shell. Close its window to leave it
+available from the Dock. After quitting or restarting macOS, run `geared-term` again.
 
 ## Upgrade
 
 ```sh
-brew update
-brew outdated --cask geared-term
-brew upgrade --cask geared-term
+brew upgrade --formula geared-term
 ```
 
-The cask pins an explicit nightly version such as `0.1.1-beta.25` and downloads the immutable
-`geared-term-mac-arm64-<version>.dmg` asset, so the checksum cannot drift while the rolling nightly
-release is replaced. `brew outdated` reports a new build as soon as either sync path bumps this tap.
+## Migrate from the previous cask
 
-## Uninstall
+Quit Geared Term before removing the old cask. The uninstall command keeps the existing user
+configuration:
 
 ```sh
-brew uninstall --cask geared-term        # keeps user data
-brew uninstall --zap --cask geared-term  # also removes settings, themes, and logs
+brew uninstall --cask geared-term
+brew update
+brew install --formula lihaozhe013/geared-term/geared-term
 ```
 
-## Caveats
-
-Nightly bundles carry an ad-hoc signature only: no Developer ID signing and no notarization. macOS
-blocks the first launch until the app is allowed in System Settings → Privacy & Security → Open
-Anyway, and because the ad-hoc signature changes with every build, macOS may ask again after each
-upgrade.
+The formula becomes available after the first nightly release containing the macOS command-line
+archive. User configuration remains at
+`~/Library/Application Support/@geared-term/desktop` across the migration and upgrades.

@@ -1,4 +1,4 @@
-name: Sync cask with the latest nightly
+name: Sync formula with the latest nightly
 
 on:
   schedule:
@@ -9,12 +9,12 @@ permissions:
   contents: write
 
 concurrency:
-  group: sync-cask
+  group: sync-formula
   cancel-in-progress: false
 
 jobs:
   sync:
-    name: Publish the current nightly cask
+    name: Publish the current nightly formula
     runs-on: ubuntu-latest
 
     steps:
@@ -33,49 +33,51 @@ jobs:
         with:
           node-version: '26'
 
-      - name: Render cask from the nightly checksum manifest
+      - name: Render formula from the nightly checksum manifest
         shell: bash
         run: |
           set -euo pipefail
 
           sums="$(curl -fsSL https://github.com/lihaozhe013/geared-term/releases/download/nightly/SHA256SUMS.txt)"
-          mapfile -t matches < <(grep -E ' geared-term-mac-arm64-.+\.dmg$' <<<"${sums}" || true)
+          mapfile -t matches < <(awk '$2 ~ /^geared-term-macos-arm64-[0-9]+\.[0-9]+\.[0-9]+(-beta\.[0-9]+)?\.tar\.gz$/ { print $0 }' <<<"${sums}")
           if (( ${#matches[@]} != 1 )); then
-            echo "::error::Expected exactly one versioned macOS arm64 DMG in the nightly manifest, found ${#matches[@]}."
-            exit 1
+            echo "::notice::The nightly release does not yet contain one versioned macOS command-line archive; leaving the previous tap entry in place."
+            exit 0
           fi
 
           checksum="$(awk '{print $1}' <<<"${matches[0]}")"
           asset="$(awk '{print $2}' <<<"${matches[0]}")"
-          version="$(sed -E 's/^geared-term-mac-arm64-(.+)\.dmg$/\1/' <<<"${asset}")"
+          version="${asset#geared-term-macos-arm64-}"
+          version="${version%.tar.gz}"
 
-          mkdir -p Casks
-          node app/apps/desktop/scripts/render-homebrew-cask.mjs \
+          mkdir -p Formula
+          node app/apps/desktop/scripts/render-homebrew-formula.mjs \
             --version "${version}" \
             --sha256 "${checksum}" \
-            --out Casks/geared-term.rb
+            --out Formula/geared-term.rb
+          rm -f Casks/geared-term.rb
+          rmdir Casks 2>/dev/null || true
 
-          # A renderer that silently writes nothing would look like "already up to date" below.
-          if ! grep -q "^  version \"${version}\"$" Casks/geared-term.rb; then
-            echo "::error::The rendered cask does not pin version ${version}."
+          if ! grep -q "^  version \"${version}\"$" Formula/geared-term.rb; then
+            echo "::error::The rendered formula does not pin version ${version}."
             exit 1
           fi
 
-      - name: Push when the cask changed
+      - name: Push when the formula changed
         shell: bash
         run: |
           set -euo pipefail
 
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add Casks/geared-term.rb
+          git add -A
           if git diff --cached --quiet; then
-            echo 'The cask already points at the current nightly.'
+            echo 'The formula already points at the current nightly.'
             exit 0
           fi
 
-          version="$(grep -m1 -oE '[0-9]+\.[0-9]+\.[0-9]+(-beta\.[0-9]+)?' Casks/geared-term.rb)"
-          git commit -m "chore(cask): publish geared-term ${version}"
+          version="$(grep -m1 -oE '[0-9]+\.[0-9]+\.[0-9]+(-beta\.[0-9]+)?' Formula/geared-term.rb)"
+          git commit -m "chore(formula): publish geared-term ${version}"
           git pull --rebase origin main
           git push origin HEAD:main
-          echo "Published Geared Term ${version}."
+          echo "Published Geared Term formula ${version}."
