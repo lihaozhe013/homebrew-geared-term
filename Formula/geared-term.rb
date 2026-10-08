@@ -1,9 +1,9 @@
 class GearedTerm < Formula
   desc "Conversation-first terminal with SSH, SFTP, and an AI assistant"
   homepage "https://github.com/lihaozhe013/geared-term"
-  version "0.1.1-beta.46"
-  url "https://github.com/lihaozhe013/geared-term/releases/download/nightly/geared-term-macos-arm64-0.1.1-beta.46.tar.gz"
-  sha256 "0d738be7820fe17e78c97b57c4e4f02ee2da1e0b41c60d8f7e810f816f9a3caf"
+  version "0.1.1-beta.47"
+  url "https://github.com/lihaozhe013/geared-term/releases/download/nightly/geared-term-macos-arm64-0.1.1-beta.47.tar.gz"
+  sha256 "184aa2757ca0133ee7f4ce8f730344c325bb0c3529bc080994b80ae811358d9e"
   license "MIT"
 
   depends_on arch: :arm64
