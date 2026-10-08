@@ -7,7 +7,7 @@ class GearedTerm < Formula
   license "MIT"
 
   depends_on arch: :arm64
-  depends_on macos: ">= :ventura"
+  depends_on macos: :ventura
 
   def install
     libexec.install Dir["*"]
